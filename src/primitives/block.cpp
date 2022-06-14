@@ -20,7 +20,7 @@ uint256 CBlockHeader::GetHash(int nHeight,int Mining) const
 {
 //printf("%s height = %d  (00) Mining ? %d\n",__func__,nHeight,Mining);
     if (nHeight==0)
-    return Phi1612(BEGIN(nVersion), END(nNonce));
+    	return Phi1612(BEGIN(nVersion), END(nNonce));
 
 //printf("%s height = %d  (01)\n",__func__,nHeight);
 
@@ -38,29 +38,37 @@ uint256 CBlockHeader::GetHash(int nHeight,int Mining) const
  
 // randomX algo
     if (randomxblock) {
-         uint256 thisSeed;
-    if (Mining == 1 || Mining == 2) 
-        thisSeed = GetRandomXSeed(nHeight);
-//    barrysPreposterouslyNamedSeedHashFunction(nHeight, thisSeed);
-        uint256 thash;
-   if (Mining == 1) {
-//                 std::cout << " 1 height " << nHeight << " seed " << thisSeed.GetHex().c_str() << "size of the seed " << strlen(thisSeed.GetHex().c_str()) << std::endl;
-           
-        rx_slow_hash((char*)this,(char*)&thash,144,thisSeed);
-        return thash;
-     } else if (Mining == 2) {
-//                std::cout << "2 height " << nHeight << " seed " << thisSeed.GetHex().c_str() << "size of the seed " << strlen(thisSeed.GetHex().c_str()) << std::endl;
-        rx_slow_hash2((char*)this,(char*)&thash,144,thisSeed);
-        return thash;
-     } else {
-            if ((nVersion & (1 << 30)))
-                return phi2_hash(BEGIN(nVersion), END(hashUTXORoot));
-    
-            if ((nVersion > VERSIONBITS_LAST_OLD_BLOCK_VERSION)) 
-                return phi2_hash(BEGIN(nVersion), END(nNonce));
+    	uint256 thisSeed;
 
-    }
-        
+//	    barrysPreposterouslyNamedSeedHashFunction(nHeight, thisSeed);
+        uint256 thash;
+
+        if (Mining == 1) {
+        	if (hashBlock1 != 0) return hashBlock1;
+
+        	thisSeed = GetRandomXSeed(nHeight);
+//          std::cout << " 1 height " << nHeight << " seed " << thisSeed.GetHex().c_str() << "size of the seed " << strlen(thisSeed.GetHex().c_str()) << std::endl;
+           
+        	rx_slow_hash((char*)this,(char*)&thash,144,thisSeed);
+
+			return thash;
+        } else if (Mining == 2) {
+        	if (hashBlock2 != 0) return hashBlock2;
+
+        	thisSeed = GetRandomXSeed(nHeight);
+//          std::cout << "2 height " << nHeight << " seed " << thisSeed.GetHex().c_str() << "size of the seed " << strlen(thisSeed.GetHex().c_str()) << std::endl;
+			rx_slow_hash2((char*)this,(char*)&thash,144,thisSeed);
+
+			return thash;
+        } else {
+        	if (hashBlock0 != 0) return hashBlock0;
+
+            if ((nVersion & (1 << 30)))
+                thash = phi2_hash(BEGIN(nVersion), END(hashUTXORoot));
+            else thash = phi2_hash(BEGIN(nVersion), END(nNonce));
+
+            return thash;
+        }
     } 
 // for genesis hash and case the function is called without argument (nHeight==0)
     return Phi1612(BEGIN(nVersion), END(nNonce));

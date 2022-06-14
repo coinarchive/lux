@@ -1885,7 +1885,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, int nHeight, con
 
     // Check the header
     if (block.IsProofOfWork() && required==true) {
-    
+    	block.SetBlockhash0(block.GetHash(nHeight));
         if (!CheckProofOfWork(block.GetHash(nHeight,2), block.nBits, consensusParams))
             return error("ReadBlockFromDisk : Errors in block header");
     }
@@ -6945,6 +6945,8 @@ static bool ProcessMessage(CNode* pfrom, const string &strCommand, CDataStream& 
         int TheHeight = pindexPrev ? pindexPrev->nHeight + 1 : 0 ;
 
         uint256 hashBlock = block.GetHash(TheHeight);
+        block.SetBlockhash0(hashBlock);
+
         CInv inv(MSG_BLOCK, hashBlock);
         LogPrint("net", "received block %s peer=%d\n", inv.hash.ToString(), pfrom->id);
 

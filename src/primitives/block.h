@@ -35,6 +35,9 @@ public:
     uint32_t nNonce;
     uint256 hashStateRoot; // lux
     uint256 hashUTXORoot; // lux
+    uint256 hashBlock0;
+    uint256 hashBlock1;
+    uint256 hashBlock2;
 
     CBlockHeader()
     {
@@ -71,6 +74,24 @@ public:
         nNonce = 0;
         hashStateRoot = 0; // lux
         hashUTXORoot = 0; // lux
+        hashBlock0 = 0;
+        hashBlock1 = 0;
+        hashBlock2 = 0;
+    }
+
+    void SetBlockhash0(uint256 BlockHash)
+    {
+        hashBlock0 = BlockHash;
+    }
+
+    void SetBlockhash1(uint256 BlockHash)
+    {
+        hashBlock1 = BlockHash;
+    }
+
+    void SetBlockhash2(uint256 BlockHash)
+    {
+        hashBlock2 = BlockHash;
     }
 
     bool IsNull() const
@@ -142,6 +163,9 @@ public:
         block.nNonce         = nNonce;
         block.hashStateRoot  = hashStateRoot; // lux
         block.hashUTXORoot   = hashUTXORoot; // lux
+        block.hashBlock0     = hashBlock0;
+        block.hashBlock1     = hashBlock1;
+        block.hashBlock2     = hashBlock2;
         return block;
     }
 
